@@ -18,7 +18,7 @@ namespace ver
     public partial class Form8 : Form
     {
         private Conexion mConexion; //objeto de clase conexion
-                                    // Propiedad para saber qué formulario está activo
+                                    // propiedad para saber qué formulario está activo
 
 
         public Form8(string numero)
@@ -38,16 +38,16 @@ namespace ver
 
         private void btnD_Click(object sender, EventArgs e)
         {
-            // Verificar que haya una fila seleccionada en el DataGridView
+            // verificar que haya una fila seleccionada en el DataGridView
             if (this.dataGridView1.CurrentRow != null)
             {
-                // Obtener el índice de la fila seleccionada
+                // bbtiene el índice de la fila seleccionada
                 int filaSelec = this.dataGridView1.CurrentRow.Index;
-                if (filaSelec >= 0) // Asegurarse de que el índice de la fila es válido
+                if (filaSelec >= 0) // asegura que el índice de la fila es válido
                 {
 
 
-                    // Obtener valores de la fila seleccionada 
+                    // obtener valores de la fila seleccionada 
                     string Medicamento = dataGridView1.Rows[filaSelec].Cells[0].Value.ToString();
                     string l = txtNumero.Text; //hereda numero con txt invisible para no perder el numero
 
@@ -63,13 +63,13 @@ namespace ver
 
         private void btnM_Click(object sender, EventArgs e)
         {
-            // Suponiendo que tienes un TextBox donde el usuario ingresa la letra de búsqueda
-            string busqueda = txtB.Text;  // Obtenemos la letra que el usuario ingresó
+           
+            string busqueda = txtB.Text;  // obtenemos la letra que el usuario ingresó
 
-            // Asegurarte de que el valor contenga el comodín para buscar cualquier texto que comience con esa letra
+            // comodín para buscar cualquier texto que comience con esa letra
             string letra = busqueda + "%";
 
-            // Consulta SQL con parámetro
+            // consulta sql con parámetro
             string sql = "SELECT Nombre FROM Medicamento WHERE Nombre LIKE @busqueda";
 
             // String busqueda = txtB.Text;
@@ -123,20 +123,20 @@ namespace ver
             
 
 
-            // Verificar que haya una fila seleccionada en el DataGridView
+            // verificar que haya una fila seleccionada en el DataGridView
             if (this.dataGridView1.CurrentRow != null)
             {
-                // Obtener el índice de la fila seleccionada
+                // obtener el índice de la fila seleccionada
                 int filaSelec = this.dataGridView1.CurrentRow.Index;
-                if (filaSelec >= 0) // Asegurarse de que el índice de la fila es válido
+                if (filaSelec >= 0) // asegurarse de que el índice de la fila es válido
                 {
-                    // Obtener valores de la fila seleccionada 
+                    // obtiene valores de la fila seleccionada 
                     string Medicamento = dataGridView1.Rows[filaSelec].Cells[0].Value.ToString();
 
-                    // Obtener el valor del TextBox
+                    // bbtener el valor del TextBox
                     //   string t = txtB.Text;
 
-                    // Abrir el formulario dependiendo del Modo
+                    // abrir el formulario dependiendo del Modo
                     if (ModoAc.Modo == "Guardar")
                     {
                        
@@ -160,29 +160,29 @@ namespace ver
 
         private void ActivoCuenta()
         {
-            // Conexion a la base de datos
+            // conexion a la base de datos
             SqlConnection connection = mConexion.getConexion();
             connection.Open();
 
             try
             {
-                // Correo que se guardó al iniciar sesión
+                // correo que se guardó al iniciar sesión
                 string correo = DatosUsuario.CorreoUsuarioActual;
 
-                // Query del campo Activo de la cuenta general
+                // query del campo Activo de la cuenta general
                 string sql = "SELECT Activo FROM Cuenta WHERE Correo = '" + correo + "'";
                 SqlCommand comando = new SqlCommand(sql, connection);
 
-                // Ejecutar el comando y obtener el valor de "activo"
+                // ejecutar el comando y obtener el valor de "activo"
                 object activoObj = comando.ExecuteScalar();
               
 
-                // Verificar si se obtuvo un valor
+                // verificar si se obtuvo un valor
                 if (activoObj != null)
                 {
                     int activo = Convert.ToInt32(activoObj);  //devuelve el valor del activo como int
 
-                    // Bloquear o habilitar el botón de Descripción por valor de "activo"
+                    // bloquear o habilitar el botón de descripción por valor de "activo"
                     if (activo == 0)
                     {
                         btnD.Enabled = false; 

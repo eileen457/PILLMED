@@ -27,15 +27,15 @@ namespace ver
             txtMed.Text = be;
           
         }
-        /*   private bool RegistroEsta(SqlConnection connection, string numero) //private no todos lo pueden usar     conectado a la base de datos busca en fila codigo
+           private bool RegistroEsta(SqlConnection connection, string numero) //   conectado a la base de datos busca en fila codigo
            {
 
                string query = "SELECT COUNT(*) FROM Usuarios WHERE Numero='" + numero + "'";
                SqlCommand cmd = new SqlCommand(query, connection);  //objeto utiliza conexion y comando en bd
                int count = Convert.ToInt32(cmd.ExecuteScalar()); //execute devuelve en numeros lo que el objeto cmd encuentre
-               return count > 6; 
+               return count > 0; 
 
-           }*/
+           }
         //verificar si un string contiene algún número
         private bool ContainsNum(string text)
         {
@@ -111,7 +111,7 @@ namespace ver
                 int cuentaId = (int)cuentaIdObj; //devuelve el ID como un entero paa evitar errores
 
 
-                // Convertir la imagen a un string hexadecimal para incluirla en la consulta
+                // convertir la imagen a un string 
                 string imagen = BitConverter.ToString(aByte).Replace("-", "");
 
                 string sql = "INSERT INTO Usuarios ( Numero, Nombre, Peso, Edad, Sexo, Tipo_sangre, Enfermedades, Alergias, Pastillas, Dosis, Medicamento, Dia, Foto, CuentaID) VALUES" +
@@ -120,15 +120,23 @@ namespace ver
                 
                 try
                 {
+                    if (RegistroEsta(connection, numero))
+                    {
+                        MessageBox.Show("Ya existe un registro con el mismo numero");
 
-                    SqlCommand comando = new SqlCommand(sql, connection);
-                    comando.ExecuteNonQuery();
+                        return;
 
-                     //  comando.Parameters.AddWithValue("@hola", txtMed.Text);
-          
+                    }
+                    else
+                    {
+                        SqlCommand comando = new SqlCommand(sql, connection);
+                        comando.ExecuteNonQuery();
 
-                    MessageBox.Show("Registro guardado");
+                        //  comando.Parameters.AddWithValue("@hola", txtMed.Text);
 
+
+                        MessageBox.Show("Registro guardado");
+                    }
 
                 }
                 catch (SqlException ex)

@@ -52,8 +52,10 @@ namespace ver
                 cargar(path);
             }
 
-   
-       
+            //  ruta de musica predeterminada    el nombre deberia cambiar tambien entonces al guardarse
+             ruta = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
+
+
         }
 
 
@@ -89,21 +91,7 @@ namespace ver
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            //detiene el sonido
-            if (axWindowsMediaPlayer1 != null)
-            {
-                timer1.Enabled = false;
-                axWindowsMediaPlayer1.Ctlcontrols.stop();
-               
-            }
-            else
-            {
-                timer1.Enabled = false;
-                song.Ctlcontrols.stop();
-                
-            }
-
-
+           
 
             String nom = txtNombre.Text;
             String dosisp = txtDosis.Text;
@@ -113,7 +101,7 @@ namespace ver
 
             //hereda de la clase donde se guarda el nombre del correo
             string correo = DatosUsuario.CorreoUsuarioActual;
-            // Reutilizar el correo que se guardó al iniciar sesión
+            // reutilizar el correo que se guardó al iniciar sesión
             string sqlCorreo = "SELECT CuentaID FROM Cuenta WHERE Correo = '" + correo + "'";
             SqlCommand comandoCorreo = new SqlCommand(sqlCorreo, connection);
 
@@ -143,6 +131,17 @@ namespace ver
 
             button1_Click(sender, e);
 
+            timer1.Enabled = false;
+
+            // Detener el sonido en ambos 
+            if (axWindowsMediaPlayer1 != null)
+            {
+                axWindowsMediaPlayer1.Ctlcontrols.stop();
+            }
+            if (song != null)
+            {
+                song.Ctlcontrols.stop();
+            }
         }
 
 
@@ -168,7 +167,7 @@ namespace ver
 
 
             string sql =
-           "SELECT Nombre, Pastillas FROM Usuarios WHERE CuentaID = @cuentaId AND Nombre = @nombre";   //REVISAR LO DEL NUMERO CREO QUE ES NOMBRE
+           "SELECT Nombre, Pastillas FROM Usuarios WHERE CuentaID = @cuentaId AND Nombre = @nombre";   
 
 
 
@@ -248,6 +247,7 @@ namespace ver
             alarmHour = comboBox1.Text;
             alarmMinute = comboBox2.Text;
             MessageBox.Show("Ya se establecio la alarma");
+           
             //clic start para establecer alarma
             button1_Click(sender, e);
 
@@ -265,6 +265,7 @@ namespace ver
         }
         void Ring_Alarm()
         {
+            
 
             string dia = Application.CurrentCulture.DateTimeFormat.GetDayName(DateTime.Now.DayOfWeek).ToLower();
             string hora= DateTime.Now.Hour.ToString("00");
@@ -278,6 +279,7 @@ namespace ver
 
                     if (dia == cb.Text.ToLower() && minutos == comboBox2.Text && hora == comboBox1.Text)
                     {
+
                         if (!string.IsNullOrEmpty(song.URL)) 
                         {
                             song.Ctlcontrols.play(); 
@@ -290,14 +292,20 @@ namespace ver
                         return;
                         // axWindowsMediaPlayer1.Ctlcontrols.play();
 
+                        /* if(axWindowsMediaPlayer1 == null){
+                             song.Ctlcontrols.play(); 
+                        }else{
+                         axWindowsMediaPlayer1.Ctlcontrols.play();
+                        }
+                        */
 
                         //axWindowsMediaPlayer1.URL = "C:\\Users\\eilee\\Downloads\\alarma-morning-mix.mp3";
 
                         //  song.Ctlcontrols.play();
 
                     }
-                   // else { song.Ctlcontrols.play(); }
-                    
+                    // else { song.Ctlcontrols.play(); }
+
                 }
             }
 
@@ -327,6 +335,8 @@ namespace ver
 
         private void Form5_Load(object sender, EventArgs e)
         {
+           
+
             axWindowsMediaPlayer1.URL = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
             // "C:\\Users\\eilee\\Downloads\\alarma-morning-mix.mp3";
      
@@ -356,13 +366,14 @@ namespace ver
                     //  string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
                     cargar(filePath);
                 }
-                else { MessageBox.Show("El archivo que esta buscando no existe"); return; }
+                else { MessageBox.Show("El archivo que esta buscando no existe"); return; 
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar el archivo: " + ex.Message);
             }
-
+            button1_Click(sender, e);
 
         }
 
@@ -372,29 +383,29 @@ namespace ver
 
         private void ActivoCuenta()
         {
-            // Conexion a la base de datos
+            // conexion a la base de datos
             SqlConnection connection = mConexion.getConexion();
             connection.Open();
 
             try
             {
-                // Correo que se guardó al iniciar sesión
+                // correo que se guardó al iniciar sesión
                 string correo = DatosUsuario.CorreoUsuarioActual;
 
-                // Query del campo Activo de la cuenta general
+                // campo Activo de la cuenta general
                 string sql = "SELECT Activo FROM Cuenta WHERE Correo = '" + correo + "'";
                 SqlCommand comando = new SqlCommand(sql, connection);
 
-                // Ejecutar el comando y obtener el valor de "activo"
+                // ejecutar el comando y obtener el valor de "activo"
                 object activoObj = comando.ExecuteScalar();
 
 
-                // Verificar si se obtuvo un valor
+                // verificar si se obtuvo un valor
                 if (activoObj != null)
                 {
                     int activo = Convert.ToInt32(activoObj);  //devuelve el valor del activo como int
 
-                    // Bloquear o habilitar el botón de Descripción por valor de "activo"
+                    // bloquear o habilitar el botón de Descripción por valor de "activo"
                     if (activo == 0)
                     {
                         btnMusica.Enabled = false;

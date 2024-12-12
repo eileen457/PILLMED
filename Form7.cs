@@ -37,7 +37,7 @@ namespace ver
 
             //hereda de la clase donde se guarda el nombre del correo
             string correo = DatosUsuario.CorreoUsuarioActual;
-            // Reutilizar el correo que se guardó al iniciar sesión
+            // reutilizar el correo que se guardó al iniciar sesión
             string sqlCorreo = "SELECT CuentaID FROM Cuenta WHERE Correo = '" + correo + "'";
             SqlCommand comandoCorreo = new SqlCommand(sqlCorreo, connection);
             object cuentaIdObj = comandoCorreo.ExecuteScalar();

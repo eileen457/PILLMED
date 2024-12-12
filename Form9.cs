@@ -48,7 +48,7 @@ namespace ver
             string sql = "SELECT Descripcion, TipoPresentacion, Dosis FROM Medicamento WHERE Nombre = @NombreMed;";
             SqlCommand comando = new SqlCommand(sql, connection);
 
-            // Usar el valor del parámetro (nombre del medicamento pasado como 'b')
+            // usar el valor del parámetro (nombre del medicamento pasado como 'b')
             comando.Parameters.AddWithValue("@NombreMed", txtB.Text);
 
             SqlDataReader reader = null;
@@ -86,10 +86,10 @@ namespace ver
         private void btnA_Click(object sender, EventArgs e)   
 
         {
-                    // Obtener el valor del TextBox
+                    // obtener el valor del TextBox
                        string t = txtB.Text;
 
-                    // Abrir el formulario dependiendo del Modo
+                    // abrir el formulario dependiendo del Modo
                     if (ModoAc.Modo == "Guardar")
                     {
                       
@@ -103,7 +103,7 @@ namespace ver
                         form6.Show();
                     }
 
-                    this.Hide(); // Ocultar este
+                    this.Hide(); // ocultar este
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)

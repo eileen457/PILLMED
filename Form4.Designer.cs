@@ -98,7 +98,7 @@
             // 
             // txtCant
             // 
-            this.txtCant.Location = new System.Drawing.Point(219, 50);
+            this.txtCant.Location = new System.Drawing.Point(226, 50);
             this.txtCant.Multiline = true;
             this.txtCant.Name = "txtCant";
             this.txtCant.Size = new System.Drawing.Size(86, 39);
@@ -337,7 +337,7 @@
             // 
             // txtDosis
             // 
-            this.txtDosis.Location = new System.Drawing.Point(500, 50);
+            this.txtDosis.Location = new System.Drawing.Point(505, 50);
             this.txtDosis.Multiline = true;
             this.txtDosis.Name = "txtDosis";
             this.txtDosis.Size = new System.Drawing.Size(75, 41);

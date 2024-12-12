@@ -240,10 +240,10 @@
             // 
             // txtCant
             // 
-            this.txtCant.Location = new System.Drawing.Point(251, 49);
+            this.txtCant.Location = new System.Drawing.Point(266, 49);
             this.txtCant.Multiline = true;
             this.txtCant.Name = "txtCant";
-            this.txtCant.Size = new System.Drawing.Size(183, 39);
+            this.txtCant.Size = new System.Drawing.Size(106, 39);
             this.txtCant.TabIndex = 28;
             // 
             // btnFoto
@@ -336,10 +336,10 @@
             // 
             // txtDosis
             // 
-            this.txtDosis.Location = new System.Drawing.Point(608, 61);
+            this.txtDosis.Location = new System.Drawing.Point(624, 61);
             this.txtDosis.Multiline = true;
             this.txtDosis.Name = "txtDosis";
-            this.txtDosis.Size = new System.Drawing.Size(155, 27);
+            this.txtDosis.Size = new System.Drawing.Size(90, 27);
             this.txtDosis.TabIndex = 59;
             // 
             // label12

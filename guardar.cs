@@ -45,7 +45,7 @@ namespace ver
             {
                 string path = Path.Combine(Application.StartupPath, "settings");
 
-                // Crear directorio si no existe
+                // crear directorio si no existe
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -53,7 +53,7 @@ namespace ver
 
                 string filePath = Path.Combine(path, "configuracion.json");
 
-                // Serializar y guardar en formato JSON
+                // guardar en formato JSON
                 var opciones = new JsonSerializerOptions { WriteIndented = true };
                 string jsonData = JsonSerializer.Serialize(this, opciones);
                 File.WriteAllText(filePath, jsonData);

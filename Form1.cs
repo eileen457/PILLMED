@@ -33,7 +33,7 @@ namespace ver
         /*
 
         //verifica si el registro ya existe antes de guardar
-        private bool RegistroEsta(SqlConnection connection, string usuario) //private no todos lo pueden usar     conectado a la base de datos busca en fila codigo
+        private bool RegistroEsta(SqlConnection connection, string usuario) //    conectado a la base de datos busca en fila codigo
         {
            
             string sql = "SELECT COUNT(*) FROM Cuenta WHERE Correo='" + usuario + "'";

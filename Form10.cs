@@ -22,7 +22,7 @@ namespace ver
             mConexion = new Conexion();
         }
 
-        private bool RegistroEsta(SqlConnection connection, string usuario) //private no todos lo pueden usar     conectado a la base de datos busca en fila codigo
+        private bool RegistroEsta(SqlConnection connection, string usuario) //private: no todos lo pueden usar     conectado a la base de datos busca en fila codigo
         {
 
             string sql = "SELECT COUNT(*) FROM Cuenta WHERE Correo='" + usuario + "'";

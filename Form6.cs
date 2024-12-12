@@ -105,7 +105,7 @@ namespace ver
 
                 //hereda de la clase donde se guarda el nombre del correo
                 string correo = DatosUsuario.CorreoUsuarioActual;
-            // Reutilizar el correo que se guardó al iniciar sesión
+            // reutilizar el correo que se guardó al iniciar sesión
             string sqlCorreo = "SELECT CuentaID FROM Cuenta WHERE Correo = '" + correo + "'";
             SqlCommand comandoCorreo = new SqlCommand(sqlCorreo, connection);
 
@@ -113,7 +113,7 @@ namespace ver
             int cuentaId = (int)cuentaIdObj;
 
 
-            // Convertir la imagen a un string hexadecimal para incluirla en la consulta
+            // Convertir la imagen a un string 
           //  string imagen = BitConverter.ToString(aByte).Replace("-", "");
 
             // Actualización del registro, incluyendo la imagen como parámetro
@@ -124,7 +124,7 @@ namespace ver
 
             SqlCommand comando = new SqlCommand(sql, connection);
 
-            // Agregar parámetros a la consulta
+            // agregar parámetros 
             comando.Parameters.AddWithValue("@nombre", usuario);
             comando.Parameters.AddWithValue("@peso", peso);
             comando.Parameters.AddWithValue("@edad", edad);
@@ -136,11 +136,11 @@ namespace ver
             comando.Parameters.AddWithValue("@pastillas", pastillas);
             comando.Parameters.AddWithValue("@dosis", dosis);
             comando.Parameters.AddWithValue("@dia", dia);
-           // comando.Parameters.AddWithValue("@foto", aByte);  // Aquí pasamos los bytes de la imagen
+           // comando.Parameters.AddWithValue("@foto", aByte);  // pasamos los bytes de la imagen
             comando.Parameters.AddWithValue("@cuentaId", cuentaId);
             comando.Parameters.AddWithValue("@numero", numero);
 
-            // Verificar si hay una imagen seleccionada para actualizar
+            // verificar si hay una imagen seleccionada para actualizar
             if (pictureBox1.Image != null)
             {
                 MemoryStream ms = new MemoryStream();

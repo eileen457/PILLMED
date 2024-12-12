@@ -69,7 +69,7 @@ namespace ver
 
                         //hereda de la clase donde esta el nombre de la cuenta
                         string correo = DatosUsuario.CorreoUsuarioActual;
-                        // Reutilizar la cuenta que se guardó al iniciar sesión
+                        // reutilizar la cuenta que se guardó al iniciar sesión
                         string sqlCorreo = "SELECT CuentaID FROM Cuenta WHERE Correo = '" + correo + "'";
                         SqlCommand comandoCorreo = new SqlCommand(sqlCorreo, connection);
 
@@ -85,7 +85,7 @@ namespace ver
                         comando.Parameters.AddWithValue("@cuentaId", cuentaId);
 
 
-                        // Ejecutamos la consulta
+                        // ejecuta consulta
                         int filasAfectadas = comando.ExecuteNonQuery();
 
                         if (filasAfectadas > 0)
