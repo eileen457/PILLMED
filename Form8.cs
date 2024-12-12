@@ -17,7 +17,7 @@ namespace ver
 
     public partial class Form8 : Form
     {
-        private Conexion mConexion; //objeto de clase conexion
+        private Conexion mConexion; // objeto de clase conexion
                                     // propiedad para saber qué formulario está activo
 
 
