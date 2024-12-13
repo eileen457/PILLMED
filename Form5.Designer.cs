@@ -59,7 +59,6 @@
             this.cbDom = new System.Windows.Forms.CheckBox();
             this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
             this.btnguardar = new System.Windows.Forms.Button();
-            this.btnLeer = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -354,26 +353,12 @@
             this.btnguardar.Visible = false;
             this.btnguardar.Click += new System.EventHandler(this.btnguardar_Click);
             // 
-            // btnLeer
-            // 
-            this.btnLeer.BackColor = System.Drawing.Color.LightCoral;
-            this.btnLeer.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLeer.Location = new System.Drawing.Point(4, 370);
-            this.btnLeer.Name = "btnLeer";
-            this.btnLeer.Size = new System.Drawing.Size(59, 27);
-            this.btnLeer.TabIndex = 68;
-            this.btnLeer.Text = "leer";
-            this.btnLeer.UseVisualStyleBackColor = false;
-            this.btnLeer.Visible = false;
-            this.btnLeer.Click += new System.EventHandler(this.btnLeer_Click);
-            // 
             // Form5
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(492, 448);
-            this.Controls.Add(this.btnLeer);
             this.Controls.Add(this.btnguardar);
             this.Controls.Add(this.cbDom);
             this.Controls.Add(this.cbSab);
@@ -443,6 +428,5 @@
         private System.Windows.Forms.CheckBox cbSab;
         private System.Windows.Forms.CheckBox cbDom;
         private System.Windows.Forms.Button btnguardar;
-        private System.Windows.Forms.Button btnLeer;
     }
 }

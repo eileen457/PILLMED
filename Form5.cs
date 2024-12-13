@@ -594,7 +594,7 @@ namespace ver
                 //    guardar g = (guardar)binfor.Deserialize(st);
 
 
-                // Leer y deserializar el archivo JSON
+                // Leer el archivo JSON
                 //string jsonContent = File.ReadAllText(filePath);
                 //guardar g = JsonSerializer.Deserialize<guardar>(jsonContent);
 

@@ -45,6 +45,11 @@ namespace ver
             connection.Open();
             try
             {
+                if (pictureBox1.Image == null)
+                {
+                    MessageBox.Show("La imagen esta vacia. Por favor, agurege una imagen");
+                    return;
+                }
                 //   MemoryStream ms = new MemoryStream();
                 // pictureBox1.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);    
                 //byte[] aByte = ms.ToArray();
@@ -64,6 +69,16 @@ namespace ver
             int pastillas;
             int dosis;
             int edad;
+
+                if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(peso)
+               || string.IsNullOrEmpty(s) || string.IsNullOrEmpty(sangre) || string.IsNullOrEmpty(enfermedad)
+               || string.IsNullOrEmpty(alergias) || string.IsNullOrEmpty(med) || string.IsNullOrEmpty(dia)
+               || string.IsNullOrEmpty(txtCant.Text) || string.IsNullOrEmpty(txtEdad.Text) || string.IsNullOrEmpty(txtDosis.Text))
+                {
+                    MessageBox.Show("Ups! Al parecer tiene recuadros vacio por llenar");
+                    return;
+                }
+
                 try
                 {
                     pastillas = int.Parse(txtCant.Text);
@@ -90,8 +105,6 @@ namespace ver
                // return;
             }
 
-
-
                 try
                 {
                     dosis = int.Parse(txtDosis.Text);
@@ -103,8 +116,8 @@ namespace ver
                 }
 
 
-                //hereda de la clase donde se guarda el nombre del correo
-                string correo = DatosUsuario.CorreoUsuarioActual;
+            //hereda de la clase donde se guarda el nombre del correo
+            string correo = DatosUsuario.CorreoUsuarioActual;
             // reutilizar el correo que se guardó al iniciar sesión
             string sqlCorreo = "SELECT CuentaID FROM Cuenta WHERE Correo = '" + correo + "'";
             SqlCommand comandoCorreo = new SqlCommand(sqlCorreo, connection);

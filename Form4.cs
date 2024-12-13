@@ -43,14 +43,14 @@ namespace ver
         }                                  //si hay numero devuelve true
         private void btnCambios_Click(object sender, EventArgs e)
         {
+            if (pictureBox1.Image == null)
+            {
+                MessageBox.Show("La imagen esta vacia. Por favor, agurege una imagen");
+                return;
+            }
+
             String Dosis=txtDosis.Text;   //NUEVO PARA dosis
-
-            MemoryStream ms=new MemoryStream();
-            pictureBox1.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-            byte[] aByte = ms.ToArray();
-
-            
-          String numero = txtNumero.Text;
+            String numero = txtNumero.Text;
             String usuario = txtNombre.Text;
             String peso=txtPeso.Text;   
                                                 // String edad=txtEdad.Text;
@@ -64,6 +64,15 @@ namespace ver
             int pastillas;
             int dosis;
             int edad;
+
+            if (string.IsNullOrEmpty(numero) || string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(peso)
+              || string.IsNullOrEmpty(s) || string.IsNullOrEmpty(sangre) || string.IsNullOrEmpty(enfermedad)
+              || string.IsNullOrEmpty(alergias) || string.IsNullOrEmpty(be) || string.IsNullOrEmpty(dia)
+              || string.IsNullOrEmpty(txtCant.Text) || string.IsNullOrEmpty(txtEdad.Text) || string.IsNullOrEmpty(txtDosis.Text))
+            {
+                MessageBox.Show("Ups! Al parecer tiene recuadros vacio por llenar");
+                return;
+            }
             try
             {
                pastillas = int.Parse(txtCant.Text);
@@ -75,6 +84,7 @@ namespace ver
                 MessageBox.Show("Error: Pastillas, edad y dosis tiene que ser numerico");
                 return;
             }
+          
 
             if (ContainsNum(s) || ContainsNum(alergias) || ContainsNum(dia))
             {
@@ -88,6 +98,10 @@ namespace ver
                 MessageBox.Show("Advertencia le quedan pocas pastillas");
                 // return;
             }
+
+            MemoryStream ms = new MemoryStream();
+            pictureBox1.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            byte[] aByte = ms.ToArray();
 
             SqlConnection connection = mConexion.getConexion();
             connection.Open();
@@ -113,6 +127,7 @@ namespace ver
 
                 // convertir la imagen a un string 
                 string imagen = BitConverter.ToString(aByte).Replace("-", "");
+
 
                 string sql = "INSERT INTO Usuarios ( Numero, Nombre, Peso, Edad, Sexo, Tipo_sangre, Enfermedades, Alergias, Pastillas, Dosis, Medicamento, Dia, Foto, CuentaID) VALUES" +
                 " ('" + numero + "','" + usuario + "','" + peso + "', '" + edad + "', '" + s + "', '" + sangre + "', '" + enfermedad + "', '" + alergias + "','" + pastillas + "','" + dosis +"','" + be + "' , '" + dia + "',  0x" + imagen + "," + cuentaId + ") ;"; 
