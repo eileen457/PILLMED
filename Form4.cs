@@ -27,12 +27,14 @@ namespace ver
             txtMed.Text = be;
           
         }
-           private bool RegistroEsta(SqlConnection connection, string numero) //   conectado a la base de datos busca en fila codigo
+           private bool RegistroEsta(SqlConnection connection,int cuentaId, string numero) //   conectado a la base de datos busca en fila codigo
            {
-
-               string query = "SELECT COUNT(*) FROM Usuarios WHERE Numero='" + numero + "'";
-               SqlCommand cmd = new SqlCommand(query, connection);  //objeto utiliza conexion y comando en bd
-               int count = Convert.ToInt32(cmd.ExecuteScalar()); //execute devuelve en numeros lo que el objeto cmd encuentre
+            string query = "SELECT COUNT(*) FROM Usuarios WHERE CuentaID = @cuentaId AND Numero = @numero";
+            // string query = "SELECT COUNT(*) FROM Usuarios WHERE Numero='" + numero + "'";
+            SqlCommand cmd = new SqlCommand(query, connection);  //objeto utiliza conexion y comando en bd
+            cmd.Parameters.AddWithValue("@cuentaId", cuentaId);
+            cmd.Parameters.AddWithValue("@numero", numero);
+            int count = Convert.ToInt32(cmd.ExecuteScalar()); //execute devuelve en numeros lo que el objeto cmd encuentre
                return count > 0; 
 
            }
@@ -135,7 +137,7 @@ namespace ver
                 
                 try
                 {
-                    if (RegistroEsta(connection, numero))
+                    if (RegistroEsta(connection, cuentaId, numero))
                     {
                         MessageBox.Show("Ya existe un registro con el mismo numero");
 

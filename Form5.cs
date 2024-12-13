@@ -28,34 +28,38 @@ namespace ver
     public partial class Form5 : Form
     {
         private Conexion mConexion; //objeto de clase conexion
+       
         public Form5()
         {
             InitializeComponent();
             song.CreateControl();
             mConexion = new Conexion();
-
-
             txtDosis.Enabled = false;
 
-            string path = Path.Combine(Application.StartupPath, "settings", "configuracion.json");
+
+
+
+            string correo = DatosUsuario.CorreoUsuarioActual;
+          
+            string fileName = $"{correo}.json";
+            ; string path = Path.Combine(Application.StartupPath, "settings", fileName);
+            //  string path = Path.Combine(Application.StartupPath, "settings", "configuracion.json");
             if (!File.Exists(path))
             {
-                // Crear configuración predeterminada si el archivo no existe
-                guardar datosPredeterminados = new guardar("", "", "", "", new List<string> { "" });
+                //crea configuración predeterminada si el archivo no existe
+                guardar datosPredeterminados = new guardar("", "", "", "", new List<string> { "" },"","");
 
-                datosPredeterminados.guardarInt(); // Guardar los datos predeterminados
-                MessageBox.Show("Archivo de configuración creado con valores predeterminados.");
+                        datosPredeterminados.guardarInt(correo); // Guardar los datos predeterminados
+                        MessageBox.Show("Archivo de configuración creado con valores predeterminados.");
             }
             else
             {
 
-                cargar(path);
+            cargar(path,correo);
             }
 
-            //  ruta de musica predeterminada    el nombre deberia cambiar tambien entonces al guardarse
-             ruta = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
-
-
+             //  ruta de musica predeterminada    el nombre deberia cambiar tambien entonces al guardarse
+                 ruta = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
         }
 
 
@@ -66,28 +70,29 @@ namespace ver
         List<string> dias = new List<string>();
 
 
-       /* int hour, minute, second;
-        string alarmHour, alarmMinute; 
+       
+        /* int hour, minute, second;
+         string alarmHour, alarmMinute; 
 
-        private void btnReloj_Click(object sender, EventArgs e)
-        {
-            String nom = txtNombre.Text;
+         private void btnReloj_Click(object sender, EventArgs e)
+         {
+             String nom = txtNombre.Text;
 
-            if (string.IsNullOrEmpty(nom))
-            {
-                MessageBox.Show("Por favor, ingrese un usuario");
-                return;
-            }
+             if (string.IsNullOrEmpty(nom))
+             {
+                 MessageBox.Show("Por favor, ingrese un usuario");
+                 return;
+             }
 
-            alarmHour = comboBox1.Text;
-            alarmMinute = comboBox2.Text;
-            MessageBox.Show("Ya se establecio la alarma");
-            //clic start para establecer alarma
-            button1_Click(sender, e);
+             alarmHour = comboBox1.Text;
+             alarmMinute = comboBox2.Text;
+             MessageBox.Show("Ya se establecio la alarma");
+             //clic start para establecer alarma
+             button1_Click(sender, e);
 
-        }*/
+         }*/
 
-        
+
 
         private void btnStop_Click(object sender, EventArgs e)
         {
@@ -191,8 +196,10 @@ namespace ver
                         txtDosis.Text = reader.GetInt32(1).ToString();
 
                     }
-                } else
-                { MessageBox.Show("No se encontro este nombre"); }
+                }
+                else { txtNombre.Text = string.Empty; txtDosis.Text = string.Empty; }
+                //else
+                //{ MessageBox.Show("No se encontro este nombre"); }
 
             }
             catch (SqlException ex)
@@ -206,11 +213,10 @@ namespace ver
             }
 
             int dosis;
-            dosis = int.Parse(txtDosis.Text);
-            if (dosis < 5)
-            {
-                MessageBox.Show("Advertencia le quedan pocas pastillas");
-                // return;
+            if (int.TryParse(txtDosis.Text, out dosis)) {
+                if (dosis < 5) {
+                    MessageBox.Show("Advertencia le quedan pocas pastillas");
+                }
             }
         }
 
@@ -237,11 +243,51 @@ namespace ver
         private void btnReloj_Click(object sender, EventArgs e)
         {
             String nom = txtNombre.Text;
+            SqlConnection connection = mConexion.getConexion();
+            connection.Open();
+
+            //hereda de la clase donde se guarda el nombre del correo
+            string correo = DatosUsuario.CorreoUsuarioActual;
+            // Reutilizar el correo que se guardó al iniciar sesión
+            string sqlCorreo = "SELECT CuentaID FROM Cuenta WHERE Correo = '" + correo + "'";
+            SqlCommand comandoCorreo = new SqlCommand(sqlCorreo, connection);
+
+            object cuentaIdObj = comandoCorreo.ExecuteScalar();
+            int cuentaId = (int)cuentaIdObj; //devuelve el ID como un entero paa evitar errores
+
+
+            string sql =
+           "SELECT Nombre, Pastillas FROM Usuarios WHERE CuentaID = @cuentaId AND Nombre = @nombre";
 
             if (string.IsNullOrEmpty(nom))
             {
                 MessageBox.Show("Por favor, ingrese un usuario");
                 return;
+            }
+
+            SqlDataReader reader = null;
+            try
+            {
+                SqlCommand comando = new SqlCommand(sql, connection);
+                comando.Parameters.AddWithValue("@nombre", nom);
+                comando.Parameters.AddWithValue("@cuentaId", cuentaId);
+
+                reader = comando.ExecuteReader();
+                if (reader.HasRows) // Si hay filas en la BD entonces el lector lee el seleccionado 
+                {
+                    while (reader.Read())
+                    {
+                        txtNombre.Text = reader.GetString(0);
+                        txtDosis.Text = reader.GetInt32(1).ToString();
+                    }
+                }
+                else { MessageBox.Show("No se encontró este nombre"); return; }
+            }
+            catch (SqlException ex) { MessageBox.Show("Error" + ex.Message); }
+            finally
+            {
+                reader.Close(); // Cerrar lector
+                connection.Close();
             }
 
             alarmHour = comboBox1.Text;
@@ -358,21 +404,21 @@ namespace ver
             ActivoCuenta();
 
             //  btnLeer_Click(sender, e);   
-            string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
-            try
-            {
-                if (File.Exists(filePath))
-                {
-                    //  string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
-                    cargar(filePath);
-                }
-                else { MessageBox.Show("El archivo que esta buscando no existe"); return; 
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar el archivo: " + ex.Message);
-            }
+            /*   string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
+               try
+               {
+                   if (File.Exists(filePath))
+                   {
+                       //  string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
+                       cargar(filePath);
+                   }
+                   else { MessageBox.Show("El archivo que esta buscando no existe"); return; 
+                   }
+               }
+               catch (Exception ex)
+               {
+                   MessageBox.Show("Error al cargar el archivo: " + ex.Message);
+               }*/
             button1_Click(sender, e);
 
         }
@@ -431,23 +477,26 @@ namespace ver
               // A.WriteLine(label2.Text +" "+ txtDosis.Text);
               A.WriteLine(txtDosis.Text);
               A.Close();
-             
 
-           /* string filePath = Path.Combine(Application.StartupPath, "settings", "datos.txt");
-            // Información a guardar en el archivo
-            string contenido = $"{txtNombre.Text}\n{txtDosis.Text}";
+            
+             string filePath = Path.Combine(Application.StartupPath, "settings", "datos.txt");
+             // Información a guardar en el archivo
+             string contenido = $"{txtNombre.Text}\n{txtDosis.Text}";
 
-            try
-            {
-                // Sobrescribir el archivo cada vez que se presione el botón
-                File.WriteAllText(filePath, contenido);
+             try
+             {
+                 // Sobrescribir el archivo cada vez que se presione el botón
+                 File.WriteAllText(filePath, contenido);
 
-                MessageBox.Show("La información se ha guardado correctamente.");
+                 MessageBox.Show("La información se ha guardado correctamente.");
+             }
+             catch (Exception ex)
+             {
+                MessageBox.Show("Error al guardar informacion: " + ex.Message);
+                // MessageBox.Show($"Error al guardar la información: {ex.Message}");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al guardar la información: {ex.Message}");
-            }   */
+
+            
         }
 
 
@@ -514,13 +563,20 @@ namespace ver
         }
         private void guardarConfiguracion()
         {
-            string path = Path.Combine(Application.StartupPath, "settings", "configuracion.json");
+            
+            string correo = DatosUsuario.CorreoUsuarioActual; 
+            string fileName = $"{correo}.json"; 
+            string path = Path.Combine(Application.StartupPath, "settings", fileName);
+              //  string path = Path.Combine(Application.StartupPath, "settings", "configuracion.json");
 
             // Si no se ha seleccionado una canción personalizada, guardar la ruta como vacía
             string rutaGuardar = string.IsNullOrEmpty(ruta) ? string.Empty : ruta;
      
-            guardar datos = new guardar(comboBox1.Text, comboBox2.Text, rutaGuardar, archivo, dias);
-            int res = datos.guardarInt();
+            guardar datos = new guardar(comboBox1.Text, comboBox2.Text, rutaGuardar, archivo, dias, txtNombre.Text, txtDosis.Text);
+          
+            string json = JsonSerializer.Serialize(datos); 
+            File.WriteAllText(path, json);  //revisar que hace esto
+            int res = datos.guardarInt(correo);
             if (res == 0)
             {
                 MessageBox.Show("Datos guardados exitosamente.");
@@ -575,8 +631,9 @@ namespace ver
             fs.Close();
         }*/
 
-        public void cargar(string filePath)
+        public void cargar(string filePath, string correo)
         {
+            LimpiarAlarma();
             try
             {               
                     // Código para leer los datos del archivo
@@ -597,25 +654,39 @@ namespace ver
                 // Leer el archivo JSON
                 //string jsonContent = File.ReadAllText(filePath);
                 //guardar g = JsonSerializer.Deserialize<guardar>(jsonContent);
+             
+
+                string fileName = $"{correo}.json"; 
+                string path = Path.Combine(Application.StartupPath, "settings", fileName);
 
                 string jsonContent = File.ReadAllText(filePath);
                 if (jsonContent.TrimStart().StartsWith("{"))
                 {
-                    guardar g = JsonSerializer.Deserialize<guardar>(jsonContent);
-                    comboBox1.Text = g.Hora;
-                    comboBox2.Text = g.Min;
-                    ruta = g.Ruta;
-                    archivo = g.Nombre;
-                    dias = g.Dias;
-
-                    // Configurar la ruta del reproductor
-                    if (!string.IsNullOrEmpty(g.Ruta))
+                    if (File.Exists(path))
                     {
-                        song.URL = g.Ruta;
+                        guardar g = JsonSerializer.Deserialize<guardar>(jsonContent);
+                        comboBox1.Text = g.Hora;
+                        comboBox2.Text = g.Min;
+                        ruta = g.Ruta;
+                        archivo = g.Nombre;
+                        dias = g.Dias;
+                        txtNombre.Text = g.Nom;
+                        txtDosis.Text = g.Med;
+
+                        // Configurar la ruta del reproductor
+                        if (!string.IsNullOrEmpty(g.Ruta))
+                        {
+                            song.URL = g.Ruta;
+
+                        }
+                       
 
                     }
+                   
 
                 }
+                else { MessageBox.Show("No se encontró la configuración para esta cuenta. Se creará una nueva configuración."); 
+                    guardarConfiguracion(); }
                 //else
                 //{
                 //    MessageBox.Show("El archivo no contiene un JSON válido.");
@@ -627,9 +698,10 @@ namespace ver
                 //    archivo = g.Nombre;
                 //    dias = g.Dias;
 
-
                 foreach (Control c in this.Controls)
                 {
+                    if (c is CheckBox cb)
+                    {
                         if (dias.Count > 0)
                         {
                             for (int i = 0; i < dias.Count; i++)
@@ -641,14 +713,16 @@ namespace ver
                                 }
                             }
                         }
-                       
+                    }
+
                 }
-                    //// Configurar la ruta del reproductor
-                    //if (!string.IsNullOrEmpty(g.Ruta))
-                    //{
-                    //    song.URL = g.Ruta;
-                       
-                    //}
+
+                //// Configurar la ruta del reproductor
+                //if (!string.IsNullOrEmpty(g.Ruta))
+                //{
+                //    song.URL = g.Ruta;
+
+                //}
 
                 //}
 
@@ -661,9 +735,25 @@ namespace ver
             // st.Close();           
         }
 
+        private void LimpiarAlarma() { 
+            comboBox1.Text = string.Empty; 
+            comboBox2.Text = string.Empty;
+            ruta = string.Empty;
+            archivo = string.Empty; 
+            dias.Clear(); 
+            txtNombre.Text = string.Empty; 
+            txtDosis.Text = string.Empty;
+            song.URL = string.Empty; 
+            foreach (Control c in this.Controls) {
+                if (c is CheckBox cb) { 
+                    cb.Checked = false;
+                }
+            }
+        }
+
 
         private void cbSL_CheckedChanged(object sender, EventArgs e)
-        {
+            {
                 foreach (Control c in this.Controls)
                 {
                     if (c is CheckBox)
@@ -675,7 +765,7 @@ namespace ver
                 }
 
 
-        }
+            }
 
 
 
