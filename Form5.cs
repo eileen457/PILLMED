@@ -404,7 +404,7 @@ namespace ver
             ActivoCuenta();
 
             //  btnLeer_Click(sender, e);   
-            /*   string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
+            /* string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
                try
                {
                    if (File.Exists(filePath))
@@ -686,7 +686,8 @@ namespace ver
 
                 }
                 else { MessageBox.Show("No se encontró la configuración para esta cuenta. Se creará una nueva configuración."); 
-                    guardarConfiguracion(); }
+                    guardarConfiguracion(); 
+                }
                 //else
                 //{
                 //    MessageBox.Show("El archivo no contiene un JSON válido.");

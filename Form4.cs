@@ -47,7 +47,7 @@ namespace ver
         {
             if (pictureBox1.Image == null)
             {
-                MessageBox.Show("La imagen esta vacia. Por favor, agurege una imagen");
+                MessageBox.Show("La imagen esta vacia. Por favor, agregue una imagen");
                 return;
             }
 
