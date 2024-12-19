@@ -24,20 +24,23 @@ namespace ver
 
         public string Hora { get => hora; set => hora = value; }
         public string Min { get => min; set => min = value; }
+
+        public List<string> Dias { get => dias; set => dias = value; }
         public string Ruta { get => ruta; set => ruta = value; }
         public string Nombre { get => nombre; set => nombre = value; }
-        public List<string> Dias { get => dias; set => dias = value; }
+        
 
         public string Nom { get => nom; set => nom = value; }
 
         public string Med { get => med; set => med = value; }
-        public guardar(string hora, string min, string ruta, string nombre, List<string> dias, string nom, string med)
+        public guardar(string hora, string min, List<string> dias, string ruta, string nombre,  string nom, string med)
         {
             this.Hora = hora;
             this.Min = min;
+            this.Dias = dias;
             this.Ruta = ruta;
             this.Nombre = nombre;
-            this.Dias = dias;
+            
             this.Nom = nom;
             this.Med = med;
 

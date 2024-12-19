@@ -20,6 +20,10 @@ using System.Runtime.Serialization;
 //using Microsoft.Data.SqlClient;
 using System.Text.Json;
 using System.Security.Cryptography;
+using System.Timers;
+using System.Reflection;
+using System.Text.Json.Serialization;
+
 
 namespace ver
 {                                                     //ALARMA FUNCIONA
@@ -28,7 +32,7 @@ namespace ver
     public partial class Form5 : Form
     {
         private Conexion mConexion; //objeto de clase conexion
-       
+        
         public Form5()
         {
             InitializeComponent();
@@ -47,7 +51,7 @@ namespace ver
             if (!File.Exists(path))
             {
                 //crea configuración predeterminada si el archivo no existe
-                guardar datosPredeterminados = new guardar("", "", "", "", new List<string> { "" },"","");
+                guardar datosPredeterminados = new guardar("", "", new List<string> { "" }, "", "", "","");
 
                         datosPredeterminados.guardarInt(correo); // Guardar los datos predeterminados
                         MessageBox.Show("Archivo de configuración creado con valores predeterminados.");
@@ -94,61 +98,7 @@ namespace ver
 
 
 
-        private void btnStop_Click(object sender, EventArgs e)
-        {
-           
-
-            String nom = txtNombre.Text;
-            String dosisp = txtDosis.Text;
-
-            SqlConnection connection = mConexion.getConexion();
-            connection.Open();
-
-            //hereda de la clase donde se guarda el nombre del correo
-            string correo = DatosUsuario.CorreoUsuarioActual;
-            // reutilizar el correo que se guardó al iniciar sesión
-            string sqlCorreo = "SELECT CuentaID FROM Cuenta WHERE Correo = '" + correo + "'";
-            SqlCommand comandoCorreo = new SqlCommand(sqlCorreo, connection);
-
-            object cuentaIdObj = comandoCorreo.ExecuteScalar();
-            int cuentaId = (int)cuentaIdObj; //devuelve el ID como un entero paa evitar errores
-
-
-            string query = "SP_RestarPastilla";
-
-            SqlCommand comando = new SqlCommand(query, connection);
-            comando.CommandType = CommandType.StoredProcedure;
-
-
-            comando.Parameters.Add("@pastillas", SqlDbType.Int);
-            comando.Parameters.Add("@nombre", SqlDbType.NVarChar, 100);
-            comando.Parameters.Add("@cuentaId", SqlDbType.Int);
-
-            comando.Parameters["@pastillas"].Value = dosisp;
-            comando.Parameters["@nombre"].Value = nom;
-            comando.Parameters["@cuentaId"].Value = cuentaId;
-            SqlDataReader sqlDataReader = comando.ExecuteReader();
-
-
-            connection.Close();
-
-            Console.ReadLine();
-
-            button1_Click(sender, e);
-
-            timer1.Enabled = false;
-
-            // Detener el sonido en ambos 
-            if (axWindowsMediaPlayer1 != null)
-            {
-                axWindowsMediaPlayer1.Ctlcontrols.stop();
-            }
-            if (song != null)
-            {
-                song.Ctlcontrols.stop();
-            }
-        }
-
+       
 
         private void txtNombre_TextChanged(object sender, EventArgs e){ }
 
@@ -242,6 +192,7 @@ namespace ver
         string alarmHour, alarmMinute;   //ya no se usa porque se compara con lo guardado en el json
         private void btnReloj_Click(object sender, EventArgs e)
         {
+
             String nom = txtNombre.Text;
             SqlConnection connection = mConexion.getConexion();
             connection.Open();
@@ -298,61 +249,54 @@ namespace ver
             button1_Click(sender, e);
 
         }
-        private void timer1_Tick(object sender, EventArgs e)     //hace que el reloj sea igual a la hora real
-        {
-            second = DateTime.Now.Second;
-            minute = DateTime.Now.Minute;
-            hour = DateTime.Now.Hour;
 
-            label11.Text = hour.ToString();           
-            label12.Text = minute.ToString();
-            label13.Text = second.ToString();
-            Ring_Alarm();
-        }
+
+
         void Ring_Alarm()
         {
-            
+
 
             string dia = Application.CurrentCulture.DateTimeFormat.GetDayName(DateTime.Now.DayOfWeek).ToLower();
-            string hora= DateTime.Now.Hour.ToString("00");
-            string minutos= DateTime.Now.Minute.ToString("00");
+            string hora = DateTime.Now.Hour.ToString("00");
+            string minutos = DateTime.Now.Minute.ToString("00");
+
+
 
             foreach (Control c in this.Controls)
             {
+
                 if (c is CheckBox cb && cb.Checked)
                 {
-
-
-                    if (dia == cb.Text.ToLower() && minutos == comboBox2.Text && hora == comboBox1.Text)
-                    {
-
-                        if (!string.IsNullOrEmpty(song.URL)) 
+                   
+                        if (dia == cb.Text.ToLower() && hora == comboBox1.Text && minutos == comboBox2.Text)
                         {
-                            song.Ctlcontrols.play(); 
+                        try { 
+                            if (!string.IsNullOrEmpty(song.URL))
+                            {
+                                song.Ctlcontrols.play();
+
+                            }
+                            else
+                            {
+
+                                axWindowsMediaPlayer1.URL = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
+                                axWindowsMediaPlayer1.Ctlcontrols.play();
+                            }
+                            return;
                         }
-                        else
-                        { 
-                            axWindowsMediaPlayer1.URL = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
-                            axWindowsMediaPlayer1.Ctlcontrols.play(); 
+                    catch (Exception ex)
+                           {
+                              MessageBox.Show("Error: " + ex.Message);
+                           }
                         }
-                        return;
-                        // axWindowsMediaPlayer1.Ctlcontrols.play();
+                    //else
+                    //{
+                    //    MessageBox.Show("Alarma no funciona");
+                    //}
 
-                        /* if(axWindowsMediaPlayer1 == null){
-                             song.Ctlcontrols.play(); 
-                        }else{
-                         axWindowsMediaPlayer1.Ctlcontrols.play();
-                        }
-                        */
-
-                        //axWindowsMediaPlayer1.URL = "C:\\Users\\eilee\\Downloads\\alarma-morning-mix.mp3";
-
-                        //  song.Ctlcontrols.play();
-
-                    }
-                    // else { song.Ctlcontrols.play(); }
 
                 }
+               
             }
 
 
@@ -373,38 +317,43 @@ namespace ver
                      else { song.Ctlcontrols.play(); }
 
                  }
-             }*/
-        }
+              }*/
+            }
 
 
 
 
-        private void Form5_Load(object sender, EventArgs e)
+
+            private void Form5_Load(object sender, EventArgs e)  //carga el formulario
         {
-           
+            
 
             axWindowsMediaPlayer1.URL = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
-            // "C:\\Users\\eilee\\Downloads\\alarma-morning-mix.mp3";
-     
             axWindowsMediaPlayer1.Ctlcontrols.stop();
-
             song.Ctlcontrols.stop();
 
-            timer1.Start();
+            //axWindowsMediaPlayer1.URL = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
+            // "C:\\Users\\eilee\\Downloads\\alarma-morning-mix.mp3";
+
+
+            SetupTimer();
+
+            //timer1.Start();
             for (int i = 0; i < 24; i++)
             {
-                comboBox1.Items.Add(i);
+                comboBox1.Items.Add(i.ToString("00"));
             }
 
             for (int j = 0; j < 60; j++)
             {
-                comboBox2.Items.Add(j);
+                comboBox2.Items.Add(j.ToString("00"));
             }
 
             ActivoCuenta();
+          
 
             //  btnLeer_Click(sender, e);   
-            /* string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
+            /*string filePath = Path.Combine(Application.StartupPath, @"settings\datos.txt");
                try
                {
                    if (File.Exists(filePath))
@@ -419,12 +368,85 @@ namespace ver
                {
                    MessageBox.Show("Error al cargar el archivo: " + ex.Message);
                }*/
-            button1_Click(sender, e);
-
+            button1_Click(sender, e);         
         }
 
+        private void timer1_Tick(object sender, EventArgs e)     //hace que el reloj sea igual a la hora real 
+        {
+            second = DateTime.Now.Second;
+            minute = DateTime.Now.Minute;
+            hour = DateTime.Now.Hour;
+
+            label11.Text = hour.ToString("00");
+            label12.Text = minute.ToString("00");
+            label13.Text = second.ToString("00");
+            Ring_Alarm();
 
 
+        }
+        private void SetupTimer()
+        {
+            timer1 = new System.Windows.Forms.Timer();
+            timer1.Interval = 1000; // 1,000 ms = 1 segundo
+            timer1.Tick += new EventHandler(timer1_Tick);
+            timer1.Start();
+        }
+        //private void Ring_Alarm()  //si detecta el dia actual hora y minutso
+        //{                           //si sabe los das guardados
+        //    try
+        //    {
+        //        string correo = DatosUsuario.CorreoUsuarioActual;
+        //        string fileName = $"{correo}.json";
+        //        string path = Path.Combine(Application.StartupPath, "settings", fileName);
+
+        //        if (File.Exists(path))
+        //        {
+
+        //            string jsonContent = File.ReadAllText(path);
+        //            guardar g = JsonSerializer.Deserialize<guardar>(jsonContent);
+
+
+        //            string dia = Application.CurrentCulture.DateTimeFormat.GetDayName(DateTime.Now.DayOfWeek).ToLower();
+        //            string hora = DateTime.Now.Hour.ToString("00");
+        //            string minutos = DateTime.Now.Minute.ToString("00");
+
+
+        //            if (g.Hora == hora && g.Min == minutos && g.Dias.Contains(dia))
+        //            {
+        //                Console.WriteLine("Condiciones de tiempo coinciden. Reproduciendo canción...");
+        //                MessageBox.Show("Condiciones de tiempo coinciden. Reproduciendo canción...", "Depuración");
+
+        //                if (!string.IsNullOrEmpty(g.Ruta))
+        //                {
+        //                    song.URL = g.Ruta;
+        //                    song.Ctlcontrols.play();
+        //                }
+        //                else
+        //                {
+        //                    axWindowsMediaPlayer1.URL = "C:\\Users\\eilee\\Downloads\\bedside-clock-alarm-95792.mp3";
+        //                    axWindowsMediaPlayer1.Ctlcontrols.play();
+        //                }
+        //            }
+        //            else
+        //            {
+        //                Console.WriteLine("Las condiciones de tiempo no coinciden.");
+        //                MessageBox.Show("Las condiciones de tiempo no coinciden.", "Depuración");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("El archivo de configuración no existe.");
+        //            MessageBox.Show("El archivo de configuración no existe.", "Depuración");
+        //        }
+        //    }
+        //    catch
+        //        (SerializationException ex)
+        //    {
+        //        MessageBox.Show(ex.Message);
+        //        return;
+
+        //    }
+        //}
         private void cbLun_CheckedChanged(object sender, EventArgs e){ }
 
         private void ActivoCuenta()
@@ -544,21 +566,21 @@ namespace ver
                       }
                   }
               }
-
-
-          /*    guardar g = new guardar(comboBox1.Text, comboBox2.Text, ruta, archivo, dias);
-              int res = g.guardarInt();   //HAY QUE DARLE EN LA X PARA CERRAR EL RELOJ Y AHI ES CUANDO GUARDA
-            if (res == 0)
-            {
-                MessageBox.Show("Datos guardados exitosamente.");
-            }
-            else
-            {
-                MessageBox.Show("Error al guardar los datos.");
-            }
-          */
-          //  btnguardar_Click(sender, e);  se puso aca porque tiene la ruta para guardar
             guardarConfiguracion();
+
+            /*    guardar g = new guardar(comboBox1.Text, comboBox2.Text, ruta, archivo, dias);
+                int res = g.guardarInt();   //HAY QUE DARLE EN LA X PARA CERRAR EL RELOJ Y AHI ES CUANDO GUARDA
+              if (res == 0)
+              {
+                  MessageBox.Show("Datos guardados exitosamente.");
+              }
+              else
+              {
+                  MessageBox.Show("Error al guardar los datos.");
+              }
+            */
+            //  btnguardar_Click(sender, e);  se puso aca porque tiene la ruta para guardar
+
 
         }
         private void guardarConfiguracion()
@@ -571,8 +593,9 @@ namespace ver
 
             // Si no se ha seleccionado una canción personalizada, guardar la ruta como vacía
             string rutaGuardar = string.IsNullOrEmpty(ruta) ? string.Empty : ruta;
-     
-            guardar datos = new guardar(comboBox1.Text, comboBox2.Text, rutaGuardar, archivo, dias, txtNombre.Text, txtDosis.Text);
+
+          
+            guardar datos = new guardar(comboBox1.Text, comboBox2.Text, dias, rutaGuardar, archivo,  txtNombre.Text, txtDosis.Text);
           
             string json = JsonSerializer.Serialize(datos); 
             File.WriteAllText(path, json);  //revisar que hace esto
@@ -633,7 +656,7 @@ namespace ver
 
         public void cargar(string filePath, string correo)
         {
-            LimpiarAlarma();
+
             try
             {               
                     // Código para leer los datos del archivo
@@ -673,13 +696,29 @@ namespace ver
                         txtNombre.Text = g.Nom;
                         txtDosis.Text = g.Med;
 
-                        // Configurar la ruta del reproductor
+                        //// Configurar la ruta del reproductor
                         if (!string.IsNullOrEmpty(g.Ruta))
                         {
                             song.URL = g.Ruta;
+                        }
+                        foreach (Control c in this.Controls)
+                        {
+                            if (c is CheckBox cb)
+                            {
+                                if (dias.Count > 0)
+                                {
+                                    for (int i = 0; i < dias.Count; i++)
+                                    {
+                                        if (c.Text == dias[i])
+                                        {
+                                            ((CheckBox)c).Checked = true;
+
+                                        }
+                                    }
+                                }
+                            }
 
                         }
-                       
 
                     }
                    
@@ -699,24 +738,24 @@ namespace ver
                 //    archivo = g.Nombre;
                 //    dias = g.Dias;
 
-                foreach (Control c in this.Controls)
-                {
-                    if (c is CheckBox cb)
-                    {
-                        if (dias.Count > 0)
-                        {
-                            for (int i = 0; i < dias.Count; i++)
-                            {
-                                if (c.Text == dias[i])
-                                {
-                                    ((CheckBox)c).Checked = true;
+                //foreach (Control c in this.Controls)
+                //{
+                //    if (c is CheckBox cb)
+                //    {
+                //        if (dias.Count > 0)
+                //        {
+                //            for (int i = 0; i < dias.Count; i++)
+                //            {
+                //                if (c.Text == dias[i])
+                //                {
+                //                    ((CheckBox)c).Checked = true;
 
-                                }
-                            }
-                        }
-                    }
+                //                }
+                //            }
+                //        }
+                //    }
 
-                }
+                //}
 
                 //// Configurar la ruta del reproductor
                 //if (!string.IsNullOrEmpty(g.Ruta))
@@ -736,21 +775,6 @@ namespace ver
             // st.Close();           
         }
 
-        private void LimpiarAlarma() { 
-            comboBox1.Text = string.Empty; 
-            comboBox2.Text = string.Empty;
-            ruta = string.Empty;
-            archivo = string.Empty; 
-            dias.Clear(); 
-            txtNombre.Text = string.Empty; 
-            txtDosis.Text = string.Empty;
-            song.URL = string.Empty; 
-            foreach (Control c in this.Controls) {
-                if (c is CheckBox cb) { 
-                    cb.Checked = false;
-                }
-            }
-        }
 
 
         private void cbSL_CheckedChanged(object sender, EventArgs e)
@@ -769,9 +793,63 @@ namespace ver
             }
 
 
+        private void btnStop_Click(object sender, EventArgs e)
+        {
 
 
-       
+            String nom = txtNombre.Text;
+            String dosisp = txtDosis.Text;
+
+            SqlConnection connection = mConexion.getConexion();
+            connection.Open();
+
+            //hereda de la clase donde se guarda el nombre del correo
+            string correo = DatosUsuario.CorreoUsuarioActual;
+            // reutilizar el correo que se guardó al iniciar sesión
+            string sqlCorreo = "SELECT CuentaID FROM Cuenta WHERE Correo = '" + correo + "'";
+            SqlCommand comandoCorreo = new SqlCommand(sqlCorreo, connection);
+
+            object cuentaIdObj = comandoCorreo.ExecuteScalar();
+            int cuentaId = (int)cuentaIdObj; //devuelve el ID como un entero paa evitar errores
+
+
+            string query = "SP_RestarPastilla";
+
+            SqlCommand comando = new SqlCommand(query, connection);
+            comando.CommandType = CommandType.StoredProcedure;
+
+
+            comando.Parameters.Add("@pastillas", SqlDbType.Int);
+            comando.Parameters.Add("@nombre", SqlDbType.NVarChar, 100);
+            comando.Parameters.Add("@cuentaId", SqlDbType.Int);
+
+            comando.Parameters["@pastillas"].Value = dosisp;
+            comando.Parameters["@nombre"].Value = nom;
+            comando.Parameters["@cuentaId"].Value = cuentaId;
+            SqlDataReader sqlDataReader = comando.ExecuteReader();
+
+
+            connection.Close();
+
+            Console.ReadLine();
+
+            button1_Click(sender, e);
+
+            timer1.Enabled = false;
+
+            // Detener el sonido en ambos 
+            if (axWindowsMediaPlayer1 != null)
+            {
+                axWindowsMediaPlayer1.Ctlcontrols.stop();
+            }
+            if (song != null)
+            {
+                song.Ctlcontrols.stop();
+            }
+        }
+
+
+
 
     }
 
